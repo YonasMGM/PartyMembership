@@ -1,0 +1,53 @@
+﻿@page "/addparty"
+@using Models
+@inject Services.PartyService _partyService;
+@inject NavigationManager _navManager
+
+<h3>Add Party</h3>
+
+<EditForm Model="PartyModel" OnValidSubmit="@CreateParty">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Name</label>
+        <InputText id="name" class="form-control" @bind-Value="PartyModel.Name" />
+        <ValidationMessage For="@(()=>PartyModel.Name)" />
+    </div>
+    <div>
+        <label>Established</label>
+        <InputDate id="year" class="form-control" @bind-Value="PartyModel.Established" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Save</button>
+                <input type="button" class="btn btn-secondary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+
+
+@code {
+
+    Party PartyModel = new Party();
+
+    protected override void OnInitialized()
+    {
+        PartyModel.Established = DateTime.Now;  //default value
+    }
+
+    private void CreateParty()
+    {
+    _partyService.AddParty(PartyModel);
+      
+    _navManager.NavigateTo("parties");
+
+    }
+
+    void Cancel()
+    {
+        _navManager.NavigateTo("Parties");
+    }
+}

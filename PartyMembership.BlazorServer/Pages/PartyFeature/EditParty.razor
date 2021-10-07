@@ -1,0 +1,58 @@
+﻿@page "/editparty/{partyId}"
+@using Models
+@inject Services.PartyService _partyService
+@inject NavigationManager _navManager
+
+<h3>Edit Party</h3>
+
+<EditForm Model="PartyModel" OnValidSubmit="@UpdateParty">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Name</label>
+        <InputText id="name" class="form-control" @bind-Value="PartyModel.Name" />
+        <ValidationMessage For="@(()=>PartyModel.Name)" />
+    </div>
+    <div>
+        <label>Established</label>
+        <InputDate id="established" class="form-control" @bind-Value="PartyModel.Established" />
+        <ValidationMessage For="@(()=>PartyModel.Established)" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Save</button>
+                <input type="button" class="btn btn-secondary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+@code {
+
+    [Parameter]
+    public string PartyId { get; set; }
+
+    Party PartyModel = new Party();
+
+
+    protected override void OnInitialized()
+    {
+        PartyModel = _partyService.GetParty(int.Parse(PartyId));
+    }
+
+    private void UpdateParty()
+    {
+
+        PartyModel.PartyId = int.Parse(PartyId);
+
+        _partyService.UpdateParty(PartyModel);
+
+        _navManager.NavigateTo($"partydetails/{PartyId}");
+    }
+
+    void Cancel()
+    {
+        _navManager.NavigateTo("parties");
+    }
+}

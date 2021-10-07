@@ -1,0 +1,50 @@
+﻿@page "/candidatedetails/{candidateId}"
+@using Models
+@inject Services.CandidateService _candidateService
+@inject NavigationManager _navManager
+<h3>Candidate Details</h3>
+
+<div class="col-sm-8">
+    <div class="card">
+        @if (CandidateModel != null)
+        {
+            <div class="card-header">
+                <h2>@CandidateModel.FirstName @CandidateModel.LastName</h2>
+            </div>
+            <div class="card-body">
+                <h4>Candidate Number : @CandidateModel.CandidateNumber</h4>
+                <h4>Email : @CandidateModel.Email</h4>
+                <h4>Dob : @CandidateModel.Dob</h4>
+                <h4>Gender : @CandidateModel.Gender.Label</h4>
+                <h4>Party : @CandidateModel.Party.Name</h4>
+            </div>
+
+            <div class="card-footer text-center">
+                <a class="btn btn-primary" href="/candidates">Back</a>
+                <a class="btn btn-primary" href="editcandidate/@CandidateModel.CandidateId">Edit</a>
+                <button class="btn btn-danger" @onclick="DeleteCandidate">Delete</button>
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public string CandidateId { get; set; }
+
+    public Candidate CandidateModel { get; set; } = new Candidate();
+
+    protected override void OnInitialized()
+    {
+        CandidateModel = _candidateService.GetCandidate(int.Parse(CandidateId));
+    }
+
+    protected void DeleteCandidate()
+    {
+        _candidateService.DeleteCandidate(CandidateModel);
+        _navManager.NavigateTo("candidates");
+    }
+
+}

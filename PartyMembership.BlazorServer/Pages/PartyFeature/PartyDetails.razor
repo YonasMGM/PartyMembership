@@ -1,0 +1,85 @@
+﻿@page "/PartyDetails/{partyId}"
+@using Models
+@inject Services.PartyService _partyService
+@inject NavigationManager _navManager
+<h3>Party Details</h3>
+
+<div class="col-sm-8">
+    <div class="card">
+        @if (PartyModel != null)
+        {
+            <div class="card-header">
+                <h2>@PartyModel.Name</h2>
+            </div>
+            <div class="card-body">
+                <h4>Party ID : @PartyModel.PartyId</h4>
+                <h4>Name : @PartyModel.Name</h4>
+                <h4>Established : @PartyModel.Established</h4>
+            </div>
+
+            <div class="card-footer text-center">
+                <a class="btn btn-primary" href="/parties">Back</a>
+                <a class="btn btn-primary" href="editparty/@PartyModel.PartyId">Edit</a>
+                <button class="btn btn-danger" @onclick="DeleteParty">Delete</button>
+            </div>
+
+        }
+    </div>
+
+
+    <div>
+
+        @if (PartyModel.Addresses != null)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Street</th>
+                        <th>City</th>
+                        <th>Postcode</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var address in PartyModel.Addresses)
+                    {
+                        <tr>
+                            <td>@address.Street</td>
+                            <td>@address.City</td>
+                            <td>@address.Postcode</td>
+                            <td>
+                                <a class="nav-link" href="AddressDetails/@address.AddressId">
+                                    <span class="oi oi-pencil" aria-hidden="true">Edit</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <div>
+        <a class="btn btn-primary" href="addaddress/@PartyModel.PartyId">Add Address</a>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string PartyId { get; set; }
+
+    public Party PartyModel { get; set; } = new Party();
+
+    protected override void OnInitialized()
+    {
+        PartyModel = _partyService.GetParty(int.Parse(PartyId));
+    }
+
+    protected void DeleteParty()
+    {
+        _partyService.DeleteParty(PartyModel);
+        _navManager.NavigateTo("Parties");
+    }
+
+}

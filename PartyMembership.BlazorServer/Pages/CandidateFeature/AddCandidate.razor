@@ -1,0 +1,99 @@
+﻿@page "/addcandidate"
+@using Models
+@inject Services.CandidateService _candidateService
+@inject Services.PartyService _partyService
+@inject NavigationManager _navManager
+
+<h3>Add Candidate</h3>
+
+<EditForm Model="CandidateModel" OnValidSubmit="@CreateCandidate">
+    <DataAnnotationsValidator />
+    <div>
+        <label>First Name</label>
+        <InputText id="firstname" class="form-control" @bind-Value="CandidateModel.FirstName" />
+        <ValidationMessage For="@(()=>CandidateModel.FirstName)" />
+    </div>
+    <div>
+        <label>Last Name</label>
+        <InputText id="lastname" class="form-control" @bind-Value="CandidateModel.LastName" />
+        <ValidationMessage For="@(()=>CandidateModel.LastName)" />
+    </div>
+
+    <div>
+        <label>Dob</label>
+        <InputDate id="dob" class="form-control" @bind-Value="CandidateModel.Dob" />
+        <ValidationMessage For="@(()=>CandidateModel.Dob)" />
+    </div>
+    <div>
+        <label>Email</label>
+        <InputText id="Email" class="form-control" @bind-Value="CandidateModel.Email" />
+        <ValidationMessage For="@(()=>CandidateModel.Email)" />
+    </div>
+    <div>
+        <label>Candidate Number</label>
+        <InputText id="candidatenumber" class="form-control" @bind-Value="CandidateModel.CandidateNumber" />
+        <ValidationMessage For="@(()=>CandidateModel.CandidateNumber)"/>
+    </div>
+
+    <div>
+        <label>Gender</label>
+        <InputSelect id="gender" class="form-control" @bind-Value="CandidateModel.GenderId">
+        <option value="0">Select</option>
+        @foreach (var gender in genders)
+        {
+            <option value="@gender.GenderId">@gender.Label</option>
+        }
+        </InputSelect>
+        <ValidationMessage For="@(()=>CandidateModel.Gender)" />
+    </div>
+
+    <div>
+        <label>Party</label>
+        <InputSelect id="party" class="form-control" @bind-Value="CandidateModel.PartyId">
+            <option value="0">Select</option>
+            @foreach (var party in parties)
+            {
+                <option value="@party.PartyId">@party.Name</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(()=>CandidateModel.Party)" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Save</button>
+                <input type="button" class="btn btn-secondary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+
+
+@code {
+
+    Candidate CandidateModel = new Candidate();
+    List<Gender> genders;
+    List<Party> parties;
+
+    protected override void OnInitialized()
+    {
+        parties =  _partyService.GetAllParties();
+        genders = _candidateService.GetAllGenders();
+
+    }
+
+    private void CreateCandidate()
+    {
+
+        _candidateService.AddCandidate(CandidateModel);
+
+        _navManager.NavigateTo("candidates");
+    }
+
+    void Cancel()
+    {
+        _navManager.NavigateTo("candidates");
+    }
+}
